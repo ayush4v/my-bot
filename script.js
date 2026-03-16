@@ -215,17 +215,19 @@ function getOptimizedHistory() {
 // API Interaction (Lightning Fast + Vision Fixed)
 async function fetchResponse(text, img) {
     // Check if it's an image generation request (Added Hindi/Hinglish keywords)
-    const imageKeywords = /\b(generate|draw|create|make|imagine|picture|banao|photo|dikhao|dikhayo|image|wallpaper|art|sketch)\b/i;
-    const isImageReq = imageKeywords.test(text) && text.length < 150;
+    const imageKeywords = /\b(generate|draw|create|make|imagine|picture|banao|photo|dikhao|dikhayo|image|wallpaper|art|sketch)\b/gi;
+    const isImageReq = /\b(generate|draw|create|make|imagine|picture|banao|photo|dikhao|dikhayo|image|wallpaper|art|sketch)\b/i.test(text) && text.length < 150;
     
     if (isImageReq && !img) {
         const seed = Math.floor(Math.random() * 999999);
-        // Clean the prompt by removing the trigger word
-        const promptRaw = text.replace(imageKeywords, '').replace(/\b(an|a|the|me|ek|ki|ka)\b/gi, '').trim();
-        const finalPrompt = promptRaw || text;
+        // Clean the prompt by removing all trigger words and common fillers
+        let finalPrompt = text.replace(imageKeywords, '').replace(/\b(an|a|the|me|ek|ki|ka|i|need|please|karo|do|give|show)\b/gi, '').trim();
+        if (!finalPrompt) finalPrompt = text; // Fallback to original text if cleanup empties it
+        
         const promptEncoded = encodeURIComponent(finalPrompt);
         
-        const url = `https://pollinations.ai/p/${promptEncoded}?width=1024&height=1024&nologo=true&seed=${seed}`;
+        // Use the verified high-performance image endpoint
+        const url = `https://image.pollinations.ai/prompt/${promptEncoded}?width=1024&height=1024&nologo=true&seed=${seed}&model=flux`;
         const botMsg = `Zaroor! Maine aapke liye **"${finalPrompt}"** ka visualization taiyaar kiya hai:`;
         
         chatHistory.push({ role: 'assistant', content: botMsg });
