@@ -367,18 +367,21 @@ body {
 
 .legal-footer, .v-tag {
     text-align: center;
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.25); /* Very faded */
-    margin-top: 12px;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.2); /* Even more subtle */
+    margin: 15px auto;
     letter-spacing: 0.5px;
     width: 100%;
+    display: block;
+    font-weight: 300;
 }
 
 .sidebar-footer {
-    padding: 15px;
-    border-top: 1px solid var(--border);
     display: flex;
     justify-content: center;
+    padding: 15px;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
 }
 
 /* Image Preview in Input */

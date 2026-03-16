@@ -174,17 +174,21 @@ function addMessage(text, role, imageUrl = null, imagePrompt = null) {
     
     let imageHtml = '';
     if (imageUrl && role === 'bot') {
-        const retryUrl = imageUrl.split('&seed=')[0] + '&seed=' + Math.floor(Math.random() * 1000000);
+        const uniqueId = `img-${Date.now()}`;
         imageHtml = `
             <div class="gpt-image-card">
-                <div class="gpt-image-container" id="img-cont-${Date.now()}">
+                <div class="gpt-image-container" id="${uniqueId}">
                     <img src="${imageUrl}" alt="${imagePrompt}" loading="lazy" 
                          onload="this.style.opacity=1"
-                         onerror="handleImageError(this, '${imagePrompt}')">
+                         onerror="handleImageError(this, '${imagePrompt}')"
+                         data-prompt="${imagePrompt}">
                 </div>
                 <div class="gpt-image-actions-bar">
-                    <span>Generated &bull; ${imagePrompt}</span>
-                    <button class="nav-icon-btn" onclick="window.open('${imageUrl}', '_blank')"><i class="fa-solid fa-download"></i></button>
+                    <span>${imagePrompt}</span>
+                    <div style="display:flex; gap:8px;">
+                        <button class="nav-icon-btn" onclick="retryImage('${uniqueId}', '${imagePrompt}')" title="Regenerate"><i class="fa-solid fa-sync"></i></button>
+                        <button class="nav-icon-btn" onclick="window.open('${imageUrl}', '_blank')"><i class="fa-solid fa-download"></i></button>
+                    </div>
                 </div>
             </div>
         `;
@@ -223,8 +227,7 @@ async function fetchResponse(text, img) {
     const isImageReq = triggerRegex.test(text) && text.length < 150;
     
     if (isImageReq && !img) {
-        const seed = Math.floor(Math.random() * 100000);
-        // Clean prompt: remove ALL common fillers and trigger words
+        const seed = Math.floor(Math.random() * 10000);
         let cleanPrompt = text.replace(triggerRegex, '')
             .replace(/\b(an|a|the|me|ek|ki|ka|i|need|please|karo|do|give|show|of|for|with|some|beautiful|ai|prochat|bana|dikha|banao|dikhayo|photo|image|picture)\b/gi, '')
             .replace(/\s+/g, ' ')
@@ -233,7 +236,7 @@ async function fetchResponse(text, img) {
         const finalPrompt = cleanPrompt || text;
         const promptEncoded = encodeURIComponent(finalPrompt);
         
-        // STABLE Endpoints List (Will rotate if error)
+        // Use the most direct endpoint possible
         const url = `https://image.pollinations.ai/prompt/${promptEncoded}?nologo=true&seed=${seed}`;
         const botMsg = `Zaroor! Maine aapke liye **"${finalPrompt}"** ka visualization taiyaar kiya hai:`;
         
@@ -336,33 +339,43 @@ chatForm.addEventListener('submit', async (e) => {
 });
 
 // Global Image Error Handler - Smart Retry & Fallback
-let retryCount = {};
+let retryMap = new Map();
 
 function handleImageError(img, prompt) {
-    const id = img.src;
-    retryCount[id] = (retryCount[id] || 0) + 1;
+    const count = (retryMap.get(prompt) || 0) + 1;
+    retryMap.set(prompt, count);
     
     const container = img.parentElement;
     if (!container.querySelector('.retry-tag')) {
         const span = document.createElement('div');
         span.className = 'retry-tag';
-        span.style = "position:absolute; bottom:10px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.7); padding:4px 12px; border-radius:20px; font-size:10px; color:#fff;";
-        span.innerText = "Enhancing Visuals...";
+        span.style = "position:absolute; bottom:15px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); padding:6px 15px; border-radius:30px; font-size:11px; color:#fff; border:1px solid rgba(255,255,255,0.1);";
+        span.innerText = "Connecting to Satellite...";
         container.style.position = 'relative';
         container.appendChild(span);
     }
 
-    if (retryCount[id] < 3) {
-        // Retry with a new seed
+    if (count < 4) {
         const nextSeed = Math.floor(Math.random() * 99999);
         setTimeout(() => {
-            img.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${nextSeed}&nologo=true`;
+            img.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${nextSeed}&nologo=true&now=${Date.now()}`;
         }, 3000);
     } else {
-        // Final Fallback: Lorem FlickR (Very stable)
-        console.log("AI Busy. Falling back to HD Library for:", prompt);
+        // Ultimate Fallback to a different service
+        console.log("Switching engine for:", prompt);
         img.src = `https://loremflickr.com/1024/1024/${encodeURIComponent(prompt)}`;
         const tag = container.querySelector('.retry-tag');
-        if (tag) tag.innerText = "Library Visual Loaded";
+        if (tag) tag.innerText = "Deep Library Visual Loaded";
     }
+}
+
+function retryImage(containerId, prompt) {
+    const container = document.getElementById(containerId);
+    const img = container.querySelector('img');
+    const tag = container.querySelector('.retry-tag');
+    if (tag) tag.remove();
+    
+    retryMap.set(prompt, 0); // Reset retry count for manual refresh
+    const newSeed = Math.floor(Math.random() * 99999);
+    img.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${newSeed}&nologo=true&refresh=true`;
 }
