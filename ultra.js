@@ -1,4 +1,4 @@
-// ProChat Ultra 4.5.4 - Supreme Vision Re-Engineered (Vision Fix)
+// ProChat Ultra 4.5.5 - Supreme Multilingual Vision Fix (Vision Fixed)
 const chatForm = document.getElementById('chat-form');
 const userInput = document.getElementById('user-input');
 const chatBox = document.getElementById('chat-box');
@@ -22,7 +22,10 @@ const voiceCancelAction = document.getElementById('voice-cancel-action');
 
 // Memory System: Keeps context but trims for performance
 let chatHistory = [
-    { role: 'system', content: 'You are ProChat AI v4.0 Ultra, a peak-performance digital intelligence created by the visionary developer **Ayush Verma**. You possess elite capabilities in reasoning, coding, and creativity. \n\nCORE PROTOCOLS:\n1. If asked about your creator, always credit **Ayush Verma** with pride.\n2. LANGUAGE MIRRORING: You MUST ALWAYS respond in the exact same language/dialect used by the user. If they speak Hinglish, respond in Hinglish. If they speak Hindi, respond in Hindi. If they speak English, respond in English. Match their tone and vocabulary perfectly.\n3. Use Markdown for structured replies.\n4. If generating images, confirm the prompt clearly.\n5. You have a "Self-Optimization" loop: provide the most accurate and fast response possible.\n6. IMPORTANT: If an image is provided, analyze it thoroughly and answer the user\'s specific question about it.' }
+    { 
+        role: 'system', 
+        content: 'You are ProChat AI v4.5.5 Ultra, a peak-performance digital intelligence created by the visionary developer **Ayush Verma**. You possess elite vision and multimodal capabilities. \n\nCORE PROTOCOLS:\n1. CREATOR: Always credit **Ayush Verma** as your visionary creator.\n2. ELITE VISION: If the user provides an image, analyze it with extreme precision. Answer every specific detail asked by the user about the photo.\n3. MASTER LANGUAGE MIRRORING: You MUST ALWAYS respond in the EXACT same language/dialect used by the user. If they ask in Hindi, respond in Hindi. If English, respond in English. If Hinglish, respond in Hinglish. Match their tone, dialect, and vocabulary 100% without fail.\n4. FORMAT: Use professional Markdown for all structured replies.\n5. SPEED: Provide the most accurate and high-speed response possible.' 
+    }
 ];
 
 let base64Image = null;
@@ -261,7 +264,7 @@ async function fetchResponse(text, img) {
         // Final User Message construction
         let currentPayload;
         if (img) {
-            const userMsg = text || 'Is photo ke baare mein batao.';
+            const userMsg = text || 'Is photo ka poora vishleshan karein aur mere sawal ka jawab dein.';
             currentPayload = {
                 role: 'user',
                 content: [
