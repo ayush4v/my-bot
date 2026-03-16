@@ -655,7 +655,7 @@ const voiceCancelAction = document.getElementById('voice-cancel-action');
 
 // Memory System: Keeps context but trims for performance
 let chatHistory = [
-    { role: 'system', content: 'You are ProChat AI v4.0 Ultra, a peak-performance digital intelligence created by the visionary developer **Ayush Verma**. You possess elite capabilities in reasoning, coding, and creativity. \n\nCORE PROTOCOLS:\n1. If asked about your creator, always credit **Ayush Verma** with pride.\n2. Respond in the user\'s language (Hinglish/English/Hindi).\n3. Use Markdown for structured replies.\n4. If generating images, confirm the prompt clearly.\n5. You have a "Self-Optimization" loop: provide the most accurate and fast response possible.\n6. IMPORTANT: If an image is provided, analyze it thoroughly and answer the user\'s specific question about it.' }
+    { role: 'system', content: 'You are ProChat AI v4.0 Ultra, a peak-performance digital intelligence created by the visionary developer **Ayush Verma**. You possess elite capabilities in reasoning, coding, and creativity. \n\nCORE PROTOCOLS:\n1. If asked about your creator, always credit **Ayush Verma** with pride.\n2. LANGUAGE MIRRORING: You MUST ALWAYS respond in the exact same language/dialect used by the user. If they speak Hinglish, respond in Hinglish. If they speak Hindi, respond in Hindi. If they speak English, respond in English. Match their tone and vocabulary perfectly.\n3. Use Markdown for structured replies.\n4. If generating images, confirm the prompt clearly.\n5. You have a "Self-Optimization" loop: provide the most accurate and fast response possible.\n6. IMPORTANT: If an image is provided, analyze it thoroughly and answer the user\'s specific question about it.' }
 ];
 
 let base64Image = null;
@@ -719,7 +719,7 @@ let recognition = null;
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
     recognition.continuous = false;
-    recognition.lang = 'en-IN';
+    recognition.lang = 'en-IN'; // Optimized for Indian users (Hinglish/English/Hindi mix)
     recognition.interimResults = false;
 
     micBtn.addEventListener('click', () => {
@@ -738,14 +738,29 @@ if (SpeechRecognition) {
     recognition.onend = () => micBtn.style.color = '';
 }
 
-// TTS Setup
+// TTS Setup (Enhanced Language Detection)
 const speak = (text) => {
     if (!autoTTS || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
+    
     const cleanText = text.replace(/[#*_~`\[\]]/g, '').replace(/https?:\/\/[^\s]+/g, 'image');
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = /[\u0900-\u097F]/.test(text) ? 'hi-IN' : 'en-US';
     
+    // Improved Detection: Checks for Hindi script (Devanagari) or common Hindi phonetics
+    const hasHindiScript = /[\u0900-\u097F]/.test(text);
+    const hasHindiWords = /\b(hai|hoon|ho|kya|kaise|mein|tum|aap|mera|yeh|woh|raha|nahi|haan)\b/i.test(text);
+    
+    utterance.lang = (hasHindiScript || hasHindiWords) ? 'hi-IN' : 'en-US';
+    
+    // Voice Selection matching gender selection in UI if possible
+    const voices = window.speechSynthesis.getVoices();
+    const voiceSelect = document.getElementById('voice-select');
+    const selectedGender = voiceSelect ? voiceSelect.value : 'female';
+    
+    let targetVoice = voices.find(v => v.lang.includes(utterance.lang) && v.name.toLowerCase().includes(selectedGender));
+    if(!targetVoice) targetVoice = voices.find(v => v.lang.includes(utterance.lang));
+    if(targetVoice) utterance.voice = targetVoice;
+
     utterance.onstart = () => voiceOverlay.classList.add('speaking');
     utterance.onend = () => {
         voiceOverlay.classList.remove('speaking');
@@ -753,6 +768,7 @@ const speak = (text) => {
     };
     window.speechSynthesis.speak(utterance);
 };
+
 
 ttsToggle.addEventListener('click', () => {
     autoTTS = !autoTTS;
