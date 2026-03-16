@@ -860,8 +860,8 @@ async function fetchResponse(text, img) {
         
         const promptEncoded = encodeURIComponent(finalPrompt);
         
-        // Use the verified stable endpoint for free high-quality images
-        const url = `https://image.pollinations.ai/prompt/${promptEncoded}?width=1024&height=1024&nologo=true&seed=${seed}`;
+        // Final attempt: Ultimate simple URL to avoid API errors
+        const url = `https://image.pollinations.ai/prompt/${promptEncoded}?nologo=true`;
         const botMsg = `Zaroor! Maine aapke liye **"${finalPrompt}"** ka visualization taiyaar kiya hai:`;
         
         chatHistory.push({ role: 'assistant', content: botMsg });
