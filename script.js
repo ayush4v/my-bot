@@ -177,7 +177,7 @@ function addMessage(text, role, imageUrl = null, imagePrompt = null) {
         imageHtml = `
             <div class="gpt-image-card">
                 <div class="gpt-image-container">
-                    <img src="${imageUrl}" alt="${imagePrompt}">
+                    <img src="${imageUrl}" alt="${imagePrompt}" loading="lazy" onerror="this.parentElement.innerHTML='<p style=padding:20px;color:#888;font-size:0.85rem;>⚠️ Image generation service is busy. Please try again in 5 seconds.</p>'; console.error('Image Load Failed:', this.src);">
                 </div>
                 <div class="gpt-image-actions-bar">
                     <span>Generated &bull; ${imagePrompt}</span>
@@ -226,8 +226,8 @@ async function fetchResponse(text, img) {
         
         const promptEncoded = encodeURIComponent(finalPrompt);
         
-        // Use the verified high-performance image endpoint
-        const url = `https://image.pollinations.ai/prompt/${promptEncoded}?width=1024&height=1024&nologo=true&seed=${seed}&model=flux`;
+        // Use the verified stable endpoint for free high-quality images
+        const url = `https://image.pollinations.ai/prompt/${promptEncoded}?width=1024&height=1024&nologo=true&seed=${seed}`;
         const botMsg = `Zaroor! Maine aapke liye **"${finalPrompt}"** ka visualization taiyaar kiya hai:`;
         
         chatHistory.push({ role: 'assistant', content: botMsg });
