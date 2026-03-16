@@ -1,4 +1,4 @@
-// ProChat Ultra 4.5.2 - Rock Solid Logic (Vision & Image Fixed)
+// ProChat Ultra 4.5.3 - Supreme Vision Solution (Vision Fix)
 const chatForm = document.getElementById('chat-form');
 const userInput = document.getElementById('user-input');
 const chatBox = document.getElementById('chat-box');
@@ -213,9 +213,17 @@ function addMessage(text, role, imageUrl = null, imagePrompt = null) {
 }
 
 // Memory Clean-up: Trim history to 8 most recent messages for speed
+// Memory Clean-up: Trim history and strip old images for lightweight context
 function getOptimizedHistory() {
     const system = chatHistory[0];
-    const recent = chatHistory.slice(-8); // Only send last 8 messages
+    const recent = chatHistory.slice(-6).map(msg => {
+        // If message has multimodal content (image), strip the image for history to save tokens/size
+        if (Array.isArray(msg.content)) {
+            const textPart = msg.content.find(c => c.type === 'text');
+            return { role: msg.role, content: textPart ? textPart.text : 'User uploaded an image.' };
+        }
+        return msg;
+    });
     if (recent.includes(system)) return recent;
     return [system, ...recent];
 }
@@ -266,9 +274,9 @@ async function fetchResponse(text, img) {
 
         const messages = [...history, currentPayload];
 
-        // VISION ELITE FIX: Using direct base endpoint for vision and V1 for text
+        // SUPREME VISION FIX: Standardize on V1 for all logic
         const modelToUse = 'openai'; 
-        const endpoint = img ? 'https://text.pollinations.ai/' : 'https://text.pollinations.ai/v1/chat/completions';
+        const endpoint = 'https://text.pollinations.ai/v1/chat/completions';
         
         const res = await fetch(endpoint, {
             method: 'POST',
@@ -282,15 +290,8 @@ async function fetchResponse(text, img) {
 
         if (!res.ok) throw new Error("API Connection Error");
         
-        let data;
-        if (img) {
-            // Base endpoint returns text directly
-            data = await res.text();
-        } else {
-            // V1 returns standard JSON
-            const jsonResponse = await res.json();
-            data = jsonResponse.choices[0].message.content;
-        }
+        const jsonResponse = await res.json();
+        const data = jsonResponse.choices[0].message.content;
         
         // Add to history
         if (img) {
