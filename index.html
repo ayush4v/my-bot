@@ -3,23 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ProChat AI v4.0 - Ultra Experience</title>
-    <!-- Version: 4.1.0 - Optimized Image Deployment: 2026-03-17 02:00 AM -->
-    <link rel="stylesheet" href="style.css">
+    <title>ProChat AI v4.2 - Ultra Experience</title>
+    <link rel="stylesheet" href="ultra.css?v=4.2.2">
     
-    <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Icons & Components -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
     <style>
-        /* Initial Loader to prevent flicker */
         #app-loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #0a0a0a; display: flex; flex-direction: column;
@@ -33,11 +29,10 @@
 <body class="dark-theme">
     <div id="app-loader">
         <div class="loader-logo"><i class="fa-solid fa-bolt"></i></div>
-        <p style="color: #666; font-size: 0.9rem; letter-spacing: 2px;">PROCHAT ULTRA 4.0</p>
+        <p style="color: #666; font-size: 0.9rem; letter-spacing: 2px;">PROCHAT ULTRA 4.2.2</p>
     </div>
 
     <div class="app-container">
-        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
@@ -61,17 +56,14 @@
                     </div>
                 </div>
             </div>
-
-
         </aside>
 
-        <!-- Main Content -->
         <main class="main-chat">
             <header class="chat-navbar">
                 <div class="nav-left">
                     <button id="sidebar-toggle" class="nav-btn"><i class="fa-solid fa-bars-staggered"></i></button>
                     <div class="model-selector">
-                        <span class="model-name">ProChat Ultra 4.0</span>
+                        <span class="model-name">ProChat Ultra 4.2.2</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </div>
                 </div>
@@ -89,7 +81,6 @@
             </header>
 
             <div class="chat-viewport" id="chat-box">
-                <!-- Welcome Screen -->
                 <div id="welcome-screen" class="welcome-container">
                     <div class="welcome-header">
                         <div class="w-logo"><i class="fa-solid fa-bolt"></i></div>
@@ -123,7 +114,6 @@
 
             <footer class="input-area">
                 <div class="input-container-wrapper">
-                    <!-- Image Preview -->
                     <div id="image-preview-container" class="image-pre-box" style="display: none;">
                         <img id="image-preview" src="">
                         <button id="remove-image" class="close-pre"><i class="fa-solid fa-xmark"></i></button>
@@ -147,12 +137,11 @@
                         </button>
                     </form>
                 </div>
-                <div class="legal-footer">ProChat v4.0 Ultra &bull; Created by <strong>Ayush Verma</strong></div>
+                <div class="v-tag">ProChat v4.2.2 Ultra &bull; Created by <b>Ayush Verma</b></div>
             </footer>
         </main>
     </div>
 
-    <!-- Voice Overlay (Gemini Style) -->
     <div id="voice-overlay" class="voice-overlay-system">
         <div class="vo-header">
             <button id="close-voice-btn" class="vo-close"><i class="fa-solid fa-chevron-down"></i> Exit Voice</button>
@@ -173,16 +162,14 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="ultra.js?v=4.2.2"></script>
     <script>
-        // Global helper for suggestions
         function setInput(text) {
             const input = document.getElementById('user-input');
             input.value = text;
             input.focus();
         }
 
-        // Remove loader after app is ready
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const loader = document.getElementById('app-loader');
@@ -193,10 +180,7 @@
             }, 800);
         });
 
-        // Diagnostic logs for hosting issues
-        console.log("%c ProChat AI v4.0 - Active ", "background: #10a37f; color: #fff; border-radius: 4px; padding: 4px 8px; font-weight: bold;");
-        console.log("System Check: All files loaded. If images don't appear, check internet connectivity.");
+        console.log("%c ProChat AI v4.2.2 - Active ", "background: #10a37f; color: #fff; border-radius: 4px; padding: 4px 8px; font-weight: bold;");
     </script>
 </body>
 </html>
-
