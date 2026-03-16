@@ -214,23 +214,24 @@ function getOptimizedHistory() {
 
 // API Interaction (Lightning Fast + Vision Fixed)
 async function fetchResponse(text, img) {
-    // Check if it's an image generation request (Added Hindi/Hinglish keywords)
-    const imageKeywords = /\b(generate|draw|create|make|imagine|picture|banao|photo|dikhao|dikhayo|image|wallpaper|art|sketch)\b/gi;
-    const isImageReq = /\b(generate|draw|create|make|imagine|picture|banao|photo|dikhao|dikhayo|image|wallpaper|art|sketch)\b/i.test(text) && text.length < 150;
+    // Aggressive Image Request Detection & Cleaning
+    const triggers = ['generate', 'draw', 'create', 'make', 'imagine', 'picture', 'banao', 'photo', 'dikhao', 'dikhayo', 'image', 'wallpaper', 'art', 'sketch', 'bana', 'dikha'];
+    const triggerRegex = new RegExp(`\\b(${triggers.join('|')})\\b`, 'gi');
+    const isImageReq = triggerRegex.test(text) && text.length < 150;
     
     if (isImageReq && !img) {
-        const seed = Math.floor(Math.random() * 999999);
-        // Clean the prompt by removing all trigger words and common fillers
-        let finalPrompt = text.replace(imageKeywords, '')
-            .replace(/\b(an|a|the|me|ek|ki|ka|i|need|please|karo|do|give|show|of|for|with|some|beautiful)\b/gi, '')
+        const seed = Math.floor(Math.random() * 1000000);
+        // Clean everything: triggers and common fillers
+        let finalPrompt = text.replace(triggerRegex, '')
+            .replace(/\b(an|a|the|me|ek|ki|ka|i|need|please|karo|do|give|show|of|for|with|some|beautiful|ai|prochat)\b/gi, '')
             .replace(/\s+/g, ' ')
             .trim();
         
-        if (!finalPrompt) finalPrompt = text; // Fallback to original text if cleanup empties it
+        if (!finalPrompt || finalPrompt.length < 2) finalPrompt = text; 
         
         const promptEncoded = encodeURIComponent(finalPrompt);
         
-        // Final attempt: Ultimate simple URL to avoid API errors
+        // Verified stable endpoint with random seed to bypass cache
         const url = `https://image.pollinations.ai/prompt/${promptEncoded}?nologo=true&seed=${seed}`;
         const botMsg = `Zaroor! Maine aapke liye **"${finalPrompt}"** ka visualization taiyaar kiya hai:`;
         
