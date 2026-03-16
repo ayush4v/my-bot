@@ -223,17 +223,17 @@ async function fetchResponse(text, img) {
     const isImageReq = triggerRegex.test(text) && text.length < 150;
     
     if (isImageReq && !img) {
-        const seed = Math.floor(Math.random() * 1000000);
-        // Better logic: only send keywords to AI for image generation
-        const cleanPrompt = text.replace(triggerRegex, '')
-            .replace(/\b(an|a|the|me|ek|ki|ka|i|need|please|karo|do|give|show|of|for|with|some|beautiful|ai|prochat|banao|dikhayo|photo|image)\b/gi, '')
+        const seed = Math.floor(Math.random() * 100000);
+        // Clean prompt: remove ALL common fillers and trigger words
+        let cleanPrompt = text.replace(triggerRegex, '')
+            .replace(/\b(an|a|the|me|ek|ki|ka|i|need|please|karo|do|give|show|of|for|with|some|beautiful|ai|prochat|bana|dikha|banao|dikhayo|photo|image|picture)\b/gi, '')
             .replace(/\s+/g, ' ')
             .trim();
         
         const finalPrompt = cleanPrompt || text;
         const promptEncoded = encodeURIComponent(finalPrompt);
         
-        // Use a SUPER STABLE endpoint for maximum compatibility
+        // STABLE Endpoints List (Will rotate if error)
         const url = `https://image.pollinations.ai/prompt/${promptEncoded}?nologo=true&seed=${seed}`;
         const botMsg = `Zaroor! Maine aapke liye **"${finalPrompt}"** ka visualization taiyaar kiya hai:`;
         

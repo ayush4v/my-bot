@@ -365,9 +365,20 @@ body {
 .send-action-btn:hover { transform: scale(1.05); background: #f0f0f0; }
 .send-action-btn:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(1); }
 
-.legal-footer {
-    text-align: center; font-size: 11px; color: #555; margin-top: 12px;
+.legal-footer, .v-tag {
+    text-align: center;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.25); /* Very faded */
+    margin-top: 12px;
     letter-spacing: 0.5px;
+    width: 100%;
+}
+
+.sidebar-footer {
+    padding: 15px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: center;
 }
 
 /* Image Preview in Input */
@@ -448,9 +459,31 @@ body {
     .action-card { padding: 16px; }
 }
 
-/* Image Card Styles */
-.gpt-image-card { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); margin-top: 15px; background: #161616; }
-.gpt-image-container { background: #000; display: flex; align-items: center; justify-content: center; min-height: 250px; }
-.gpt-image-container img { max-width: 100%; height: auto; max-height: 500px; display: block; }
+/* Enhanced Image Card for guaranteed visibility */
+.gpt-image-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 15px 0;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.gpt-image-container {
+    min-height: 300px;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.gpt-image-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: opacity 0.4s ease;
+}
 .gpt-image-actions-bar { background: #1a1a1a; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
 .gpt-image-actions-bar span { font-size: 0.8rem; color: #888; font-weight: 500; }
