@@ -265,8 +265,8 @@ async function fetchResponse(text, img) {
 
         const messages = [...history, currentPayload];
 
-        // Use a faster model if image is not present, or 'openai' for vision
-        const modelToUse = 'openai'; 
+        // Use GPT-4o for best vision support
+        const modelToUse = img ? 'openai' : 'openai'; 
 
         const res = await fetch('https://text.pollinations.ai/', {
             method: 'POST',
@@ -283,7 +283,11 @@ async function fetchResponse(text, img) {
         const data = await res.text();
         
         // Add to history
-        chatHistory.push({ role: 'user', content: text });
+        if (img) {
+            chatHistory.push(currentPayload);
+        } else {
+            chatHistory.push({ role: 'user', content: text });
+        }
         chatHistory.push({ role: 'assistant', content: data });
         
         return { text: data };
