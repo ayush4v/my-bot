@@ -1,4 +1,4 @@
-// ProChat Ultra 4.5.3 - Supreme Vision Solution (Vision Fix)
+// ProChat Ultra 4.5.4 - Supreme Vision Re-Engineered (Vision Fix)
 const chatForm = document.getElementById('chat-form');
 const userInput = document.getElementById('user-input');
 const chatBox = document.getElementById('chat-box');
@@ -216,16 +216,17 @@ function addMessage(text, role, imageUrl = null, imagePrompt = null) {
 // Memory Clean-up: Trim history and strip old images for lightweight context
 function getOptimizedHistory() {
     const system = chatHistory[0];
-    const recent = chatHistory.slice(-6).map(msg => {
-        // If message has multimodal content (image), strip the image for history to save tokens/size
+    const recent = chatHistory.slice(-8).map(msg => {
+        // Essential: Strip base64 data from history to prevent payload bloating & model confusion
         if (Array.isArray(msg.content)) {
-            const textPart = msg.content.find(c => c.type === 'text');
-            return { role: msg.role, content: textPart ? textPart.text : 'User uploaded an image.' };
+            const textContent = msg.content.find(c => c.type === 'text');
+            return { role: msg.role, content: textContent ? textContent.text : 'User provided an image.' };
         }
         return msg;
     });
-    if (recent.includes(system)) return recent;
-    return [system, ...recent];
+    // Ensure system prompt is always at the top
+    const finalHist = recent.some(m => m.role === 'system') ? recent : [system, ...recent];
+    return finalHist;
 }
 
 // API Interaction (Lightning Fast + Vision Fixed)
@@ -274,7 +275,7 @@ async function fetchResponse(text, img) {
 
         const messages = [...history, currentPayload];
 
-        // SUPREME VISION FIX: Standardize on V1 for all logic
+        // SUPREME VISION RE-ENGINEERING: Using standard OpenAI V1 Bridge
         const modelToUse = 'openai'; 
         const endpoint = 'https://text.pollinations.ai/v1/chat/completions';
         
@@ -284,14 +285,18 @@ async function fetchResponse(text, img) {
             body: JSON.stringify({ 
                 messages: messages, 
                 model: modelToUse,
-                seed: Math.floor(Math.random() * 100000)
+                seed: Math.floor(Math.random() * 100000),
+                jsonMode: false // Ensure we get a text response
             })
         });
 
-        if (!res.ok) throw new Error("API Connection Error");
+        if (!res.ok) {
+            console.error("Vision Bridge Failure:", res.status);
+            throw new Error("Vision Bridge Offline");
+        }
         
-        const jsonResponse = await res.json();
-        const data = jsonResponse.choices[0].message.content;
+        const jsonResult = await res.json();
+        const data = jsonResult.choices[0].message.content;
         
         // Add to history
         if (img) {
