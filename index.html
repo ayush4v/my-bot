@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProChat - Advanced AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-bolt"></i>
+                <span>ProChat AI</span>
+            </div>
+            <button class="new-chat-btn" onclick="location.reload()">
+                <i class="fa-solid fa-plus"></i> New Chat
+            </button>
+            <div class="sidebar-history">
+                <div class="history-group">
+                    <p class="section-title">Today</p>
+                    <div class="history-item active">
+                        <i class="fa-regular fa-message"></i>
+                        <span>New Conversation</span>
+                    </div>
+                </div>
+
+                <div class="history-group" style="margin-top: 20px;">
+                    <p class="section-title">Yesterday</p>
+                    <div class="history-item">
+                        <i class="fa-regular fa-message"></i>
+                        <span>AI Vision Research</span>
+                    </div>
+                    <div class="history-item">
+                        <i class="fa-regular fa-message"></i>
+                        <span>Python Automation Script</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-area">
+            <header class="chat-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menu-toggle" title="Open Sidebar"><i class="fa-solid fa-bars"></i></button>
+                    <div class="header-title">
+                        <h2>ProChat AI</h2>
+                        <span class="status"><span class="dot"></span> Online</span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="model-badge">
+                        <i class="fa-solid fa-microchip"></i> <span>Ultra 4.0</span>
+                    </div>
+                    <select id="voice-select" class="voice-select" title="Change AI Voice">
+                        <option value="female">👧 Female</option>
+                        <option value="male">👦 Male</option>
+                    </select>
+                    <button class="icon-btn" id="tts-toggle" title="Toggle Auto-Speak Voice"><i class="fa-solid fa-volume-xmark"></i></button>
+                    <button class="icon-btn" id="theme-toggle" title="Toggle Theme"><i class="fa-solid fa-moon"></i></button>
+                </div>
+            </header>
+
+            <div class="chat-box" id="chat-box">
+                <div id="welcome-screen" class="welcome-screen">
+                    <div class="welcome-logo"><i class="fa-solid fa-bolt"></i></div>
+                    <h2>How can I help you today?</h2>
+                    
+                    <div class="suggestion-grid">
+                        <div class="suggestion-card" onclick="document.getElementById('user-input').value='Generate an image of '; document.getElementById('user-input').focus();">
+                            <i class="fa-regular fa-image"></i>
+                            <p class="sg-title">Generate an image</p>
+                        </div>
+                        <div class="suggestion-card" onclick="document.getElementById('user-input').value='Explain '; document.getElementById('user-input').focus();">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <p class="sg-title">Explain a concept</p>
+                        </div>
+                        <div class="suggestion-card" onclick="document.getElementById('user-input').value='Write code for '; document.getElementById('user-input').focus();">
+                            <i class="fa-solid fa-code"></i>
+                            <p class="sg-title">Write code</p>
+                        </div>
+                        <div class="suggestion-card" onclick="document.getElementById('voice-call-btn').click();">
+                            <i class="fa-solid fa-microphone-lines"></i>
+                            <p class="sg-title">Start Voice Mode</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <div id="image-preview-container" style="display: none;">
+                    <img id="image-preview" src="" alt="Upload Preview">
+                    <button id="remove-image"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <form id="chat-form">
+                    <input type="file" id="file-input" accept="image/*" style="display: none;">
+                    <button type="button" class="action-btn" id="upload-btn" title="Upload Image"><i class="fa-solid fa-plus"></i></button>
+                    
+                    <div class="input-wrapper">
+                        <input type="text" id="user-input" placeholder="Message ProChat AI..." autocomplete="off">
+                        <button type="button" class="action-btn mic-btn" id="mic-btn" title="Voice Input"><i class="fa-solid fa-microphone"></i></button>
+                        <button type="button" class="gpt-voice-btn" id="voice-call-btn" title="Start AI Voice Conversation">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3" y="10" width="3" height="4" rx="1.5"/>
+                                <rect x="9" y="6" width="3" height="12" rx="1.5"/>
+                                <rect x="15" y="4" width="3" height="16" rx="1.5"/>
+                                <rect x="21" y="8" width="3" height="8" rx="1.5"/>
+                            </svg>
+                        </button>
+                    </div>
+
+    <!-- Fullscreen Voice Mode Overlay -->
+    <div id="voice-overlay" class="voice-overlay">
+        <button id="close-voice-btn" class="close-voice-btn" title="Exit Voice Mode"><i class="fa-solid fa-xmark"></i></button>
+        <div class="voice-status" id="voice-status-text">Listening...</div>
+        
+        <div class="voice-visualizer">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+            <div class="blob blob-4"></div>
+        </div>
+        
+        <div class="voice-action-text" id="voice-cancel-action">Cancel</div>
+    </div>
+                    <button type="submit" class="send-btn"><i class="fa-solid fa-arrow-up"></i></button>
+                </form>
+                <div class="footer-text">ProChat AI properly uses AI Vision & generation. Created by Ayush Verma.</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Render Markdown & Highlight.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
