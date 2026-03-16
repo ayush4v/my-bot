@@ -1,4 +1,4 @@
-// ProChat Ultra 4.6.0 - Supreme Mobile UI & Language Logic (Vision Fixed)
+// ProChat Ultra 4.6.1 - Premium Theme Engine & Vision Logic (Vision Fixed)
 const chatForm = document.getElementById('chat-form');
 const userInput = document.getElementById('user-input');
 const chatBox = document.getElementById('chat-box');
@@ -19,6 +19,8 @@ const voiceOverlay = document.getElementById('voice-overlay');
 const closeVoiceBtn = document.getElementById('close-voice-btn');
 const voiceStatusText = document.getElementById('voice-status-text');
 const voiceCancelAction = document.getElementById('voice-cancel-action');
+const themeToggle = document.getElementById('theme-toggle');
+const body = document.body;
 
 // Memory System: Keeps context but trims for performance
 let chatHistory = [
@@ -36,6 +38,25 @@ let isContinuousVoiceMode = false;
 if (sidebarToggle) {
     sidebarToggle.addEventListener('click', () => {
         sidebar.classList.toggle('active');
+    });
+}
+
+// Theme Persistence & Toggle Logic
+if (localStorage.getItem('theme') === 'light') {
+    body.classList.add('light-theme');
+    if(themeToggle) themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
+}
+
+if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+        body.classList.toggle('light-theme');
+        const isLight = body.classList.contains('light-theme');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        
+        // Visual feedback
+        themeToggle.style.transform = 'scale(1.2) rotate(360deg)';
+        setTimeout(() => themeToggle.style.transform = '', 300);
     });
 }
 

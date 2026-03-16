@@ -19,6 +19,19 @@
     --font-main: 'Outfit', sans-serif;
     --font-heading: 'Space Grotesk', sans-serif;
     --input-bg: #1e1e1e;
+    --transition-fast: 0.2s ease;
+    --transition-smooth: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+body.light-theme {
+    --bg-main: #f9f9f9;
+    --bg-sidebar: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666666;
+    --border: rgba(0, 0, 0, 0.08);
+    --glass: rgba(255, 255, 255, 0.9);
+    --input-bg: #f0f0f0;
+    --shadow-premium: 0 10px 40px rgba(0, 0, 0, 0.08);
 }
 
 * {
@@ -35,6 +48,7 @@ body {
     height: 100vh;
     overflow: hidden;
     display: flex;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* App Container */
@@ -528,7 +542,7 @@ body {
 <body class="dark-theme">
     <div id="app-loader">
         <div class="loader-logo"><i class="fa-solid fa-bolt"></i></div>
-        <p style="color: #666; font-size: 0.9rem; letter-spacing: 2px;">PROCHAT ULTRA 4.6.0</p>
+        <p style="color: #666; font-size: 0.9rem; letter-spacing: 2px;">PROCHAT ULTRA 4.6.1</p>
     </div>
 
     <div class="app-container">
@@ -562,7 +576,7 @@ body {
                 <div class="nav-left">
                     <button id="sidebar-toggle" class="nav-btn"><i class="fa-solid fa-bars-staggered"></i></button>
                     <div class="model-selector">
-                        <span class="model-name">ProChat Ultra 4.6.0</span>
+                        <span class="model-name">ProChat Ultra 4.6.1</span>
                         <i class="fa-solid fa-chevron-down"></i>
                     </div>
                 </div>
@@ -636,7 +650,7 @@ body {
                         </button>
                     </form>
                 </div>
-                <div class="v-tag">ProChat v4.6.0 Ultra &bull; Created by <b>Ayush Verma</b></div>
+                <div class="v-tag">ProChat v4.6.1 Ultra &bull; Created by <b>Ayush Verma</b></div>
             </footer>
         </main>
     </div>
@@ -662,7 +676,7 @@ body {
     </div>
 
     <script>
-// ProChat Ultra 4.6.0 - Supreme Mobile UI & Language Logic (Vision Fixed)
+// ProChat Ultra 4.6.1 - Premium Theme Engine & Vision Logic (Vision Fixed)
 const chatForm = document.getElementById('chat-form');
 const userInput = document.getElementById('user-input');
 const chatBox = document.getElementById('chat-box');
@@ -683,6 +697,8 @@ const voiceOverlay = document.getElementById('voice-overlay');
 const closeVoiceBtn = document.getElementById('close-voice-btn');
 const voiceStatusText = document.getElementById('voice-status-text');
 const voiceCancelAction = document.getElementById('voice-cancel-action');
+const themeToggle = document.getElementById('theme-toggle');
+const body = document.body;
 
 // Memory System: Keeps context but trims for performance
 let chatHistory = [
@@ -700,6 +716,25 @@ let isContinuousVoiceMode = false;
 if (sidebarToggle) {
     sidebarToggle.addEventListener('click', () => {
         sidebar.classList.toggle('active');
+    });
+}
+
+// Theme Persistence & Toggle Logic
+if (localStorage.getItem('theme') === 'light') {
+    body.classList.add('light-theme');
+    if(themeToggle) themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
+}
+
+if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+        body.classList.toggle('light-theme');
+        const isLight = body.classList.contains('light-theme');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        themeToggle.innerHTML = isLight ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        
+        // Visual feedback
+        themeToggle.style.transform = 'scale(1.2) rotate(360deg)';
+        setTimeout(() => themeToggle.style.transform = '', 300);
     });
 }
 
@@ -1088,7 +1123,7 @@ function retryImage(containerId, prompt) {
             }, 800);
         });
 
-        console.log("%c ProChat AI v4.6.0 - Active ", "background: #10a37f; color: #fff; border-radius: 4px; padding: 4px 8px; font-weight: bold;");
+        console.log("%c ProChat AI v4.6.1 - Active ", "background: #10a37f; color: #fff; border-radius: 4px; padding: 4px 8px; font-weight: bold;");
     </script>
 </body>
 </html>

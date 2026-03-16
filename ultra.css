@@ -12,6 +12,19 @@
     --font-main: 'Outfit', sans-serif;
     --font-heading: 'Space Grotesk', sans-serif;
     --input-bg: #1e1e1e;
+    --transition-fast: 0.2s ease;
+    --transition-smooth: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+body.light-theme {
+    --bg-main: #f9f9f9;
+    --bg-sidebar: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666666;
+    --border: rgba(0, 0, 0, 0.08);
+    --glass: rgba(255, 255, 255, 0.9);
+    --input-bg: #f0f0f0;
+    --shadow-premium: 0 10px 40px rgba(0, 0, 0, 0.08);
 }
 
 * {
@@ -28,6 +41,7 @@ body {
     height: 100vh;
     overflow: hidden;
     display: flex;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* App Container */
