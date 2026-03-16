@@ -847,17 +847,22 @@ function getOptimizedHistory() {
 
 // API Interaction (Lightning Fast + Vision Fixed)
 async function fetchResponse(text, img) {
-    // Check if it's an image generation request
-    const isImageReq = /\b(generate|draw|create|make|imagine|picture)\b/i.test(text) && text.length < 120;
+    // Check if it's an image generation request (Added Hindi/Hinglish keywords)
+    const imageKeywords = /\b(generate|draw|create|make|imagine|picture|banao|photo|dikhao|dikhayo|image|wallpaper|art|sketch)\b/i;
+    const isImageReq = imageKeywords.test(text) && text.length < 150;
     
     if (isImageReq && !img) {
         const seed = Math.floor(Math.random() * 999999);
-        const promptRaw = text.replace(/\b(generate|draw|create|make|imagine|picture)\b/i, '').trim();
-        const prompt = encodeURIComponent(promptRaw || text);
-        const url = `https://pollinations.ai/p/${prompt}?width=1024&height=1024&nologo=true&seed=${seed}`;
-        const botMsg = `Certainly! I've visualized **${promptRaw || text}** for you:`;
+        // Clean the prompt by removing the trigger word
+        const promptRaw = text.replace(imageKeywords, '').replace(/\b(an|a|the|me|ek|ki|ka)\b/gi, '').trim();
+        const finalPrompt = promptRaw || text;
+        const promptEncoded = encodeURIComponent(finalPrompt);
+        
+        const url = `https://pollinations.ai/p/${promptEncoded}?width=1024&height=1024&nologo=true&seed=${seed}`;
+        const botMsg = `Zaroor! Maine aapke liye **"${finalPrompt}"** ka visualization taiyaar kiya hai:`;
+        
         chatHistory.push({ role: 'assistant', content: botMsg });
-        return { text: botMsg, img: url, prompt: promptRaw || text };
+        return { text: botMsg, img: url, prompt: finalPrompt };
     }
 
     try {
