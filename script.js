@@ -221,13 +221,17 @@ async function fetchResponse(text, img) {
     if (isImageReq && !img) {
         const seed = Math.floor(Math.random() * 999999);
         // Clean the prompt by removing all trigger words and common fillers
-        let finalPrompt = text.replace(imageKeywords, '').replace(/\b(an|a|the|me|ek|ki|ka|i|need|please|karo|do|give|show)\b/gi, '').trim();
+        let finalPrompt = text.replace(imageKeywords, '')
+            .replace(/\b(an|a|the|me|ek|ki|ka|i|need|please|karo|do|give|show|of|for|with|some|beautiful)\b/gi, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        
         if (!finalPrompt) finalPrompt = text; // Fallback to original text if cleanup empties it
         
         const promptEncoded = encodeURIComponent(finalPrompt);
         
         // Final attempt: Ultimate simple URL to avoid API errors
-        const url = `https://image.pollinations.ai/prompt/${promptEncoded}?nologo=true`;
+        const url = `https://image.pollinations.ai/prompt/${promptEncoded}?nologo=true&seed=${seed}`;
         const botMsg = `Zaroor! Maine aapke liye **"${finalPrompt}"** ka visualization taiyaar kiya hai:`;
         
         chatHistory.push({ role: 'assistant', content: botMsg });
