@@ -174,10 +174,13 @@ function addMessage(text, role, imageUrl = null, imagePrompt = null) {
     
     let imageHtml = '';
     if (imageUrl && role === 'bot') {
+        const retryUrl = imageUrl.split('&seed=')[0] + '&seed=' + Math.floor(Math.random() * 1000000);
         imageHtml = `
             <div class="gpt-image-card">
-                <div class="gpt-image-container">
-                    <img src="${imageUrl}" alt="${imagePrompt}" loading="lazy" onerror="this.parentElement.innerHTML='<p style=padding:20px;color:#888;font-size:0.85rem;>⚠️ Image generation service is busy. Please try again in 5 seconds.</p>'; console.error('Image Load Failed:', this.src);">
+                <div class="gpt-image-container" id="img-cont-${Date.now()}">
+                    <img src="${imageUrl}" alt="${imagePrompt}" loading="lazy" 
+                         onload="this.style.opacity=1"
+                         onerror="handleImageError(this, '${imagePrompt}')">
                 </div>
                 <div class="gpt-image-actions-bar">
                     <span>Generated &bull; ${imagePrompt}</span>
@@ -231,8 +234,8 @@ async function fetchResponse(text, img) {
         
         const promptEncoded = encodeURIComponent(finalPrompt);
         
-        // Verified stable endpoint with random seed to bypass cache
-        const url = `https://image.pollinations.ai/prompt/${promptEncoded}?nologo=true&seed=${seed}`;
+        // Use a more robust endpoint with specific model and high randomness
+        const url = `https://image.pollinations.ai/prompt/${promptEncoded}?nologo=true&seed=${seed}&width=1024&height=1024&model=flux`;
         const botMsg = `Zaroor! Maine aapke liye **"${finalPrompt}"** ka visualization taiyaar kiya hai:`;
         
         chatHistory.push({ role: 'assistant', content: botMsg });
@@ -332,3 +335,28 @@ chatForm.addEventListener('submit', async (e) => {
     userInput.disabled = false;
     userInput.focus();
 });
+
+// Global Image Error Handler with Auto-Retry
+function handleImageError(img, prompt) {
+    console.warn("Retrying image load for:", prompt);
+    const container = img.parentElement;
+    
+    // Show a subtle retry message instead of blocking the UI
+    if (!container.querySelector('.retry-tag')) {
+        const span = document.createElement('div');
+        span.className = 'retry-tag';
+        span.style = "position:absolute; bottom:10px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.7); padding:4px 12px; border-radius:20px; font-size:10px; color:#fff;";
+        span.innerText = "Processing Ultra HD...";
+        container.style.position = 'relative';
+        container.appendChild(span);
+    }
+
+    const newSeed = Math.floor(Math.random() * 1000000);
+    const newUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?nologo=true&seed=${newSeed}&width=1024&height=1024`;
+    
+    // Wait and retry
+    setTimeout(() => {
+        img.src = newUrl;
+    }, 4000);
+}
+
