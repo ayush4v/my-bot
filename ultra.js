@@ -1,4 +1,4 @@
-// ProChat Ultra 4.5 - Rock Solid Logic (Vision & Image Fixed)
+// ProChat Ultra 4.5.2 - Rock Solid Logic (Vision & Image Fixed)
 const chatForm = document.getElementById('chat-form');
 const userInput = document.getElementById('user-input');
 const chatBox = document.getElementById('chat-box');
@@ -266,9 +266,9 @@ async function fetchResponse(text, img) {
 
         const messages = [...history, currentPayload];
 
-        // VISION MEGA FIX: Use OpenAI model on V1 endpoint for 100% success
+        // VISION ELITE FIX: Using direct base endpoint for vision and V1 for text
         const modelToUse = 'openai'; 
-        const endpoint = 'https://text.pollinations.ai/v1/chat/completions'; 
+        const endpoint = img ? 'https://text.pollinations.ai/' : 'https://text.pollinations.ai/v1/chat/completions';
         
         const res = await fetch(endpoint, {
             method: 'POST',
@@ -280,13 +280,17 @@ async function fetchResponse(text, img) {
             })
         });
 
-        if (!res.ok) {
-            console.error("Pollinations API Error Status:", res.status);
-            throw new Error("API Connection Error");
-        }
+        if (!res.ok) throw new Error("API Connection Error");
         
-        const jsonResponse = await res.json();
-        const data = jsonResponse.choices[0].message.content;
+        let data;
+        if (img) {
+            // Base endpoint returns text directly
+            data = await res.text();
+        } else {
+            // V1 returns standard JSON
+            const jsonResponse = await res.json();
+            data = jsonResponse.choices[0].message.content;
+        }
         
         // Add to history
         if (img) {
