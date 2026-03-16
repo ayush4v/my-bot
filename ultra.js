@@ -1,4 +1,4 @@
-// ProChat Ultra 4.5.5 - Supreme Multilingual Vision Fix (Vision Fixed)
+// ProChat Ultra 4.5.6 - Elite Language Mirroring (Vision Fixed)
 const chatForm = document.getElementById('chat-form');
 const userInput = document.getElementById('user-input');
 const chatBox = document.getElementById('chat-box');
@@ -24,7 +24,7 @@ const voiceCancelAction = document.getElementById('voice-cancel-action');
 let chatHistory = [
     { 
         role: 'system', 
-        content: 'You are ProChat AI v4.5.5 Ultra, a peak-performance digital intelligence created by the visionary developer **Ayush Verma**. You possess elite vision and multimodal capabilities. \n\nCORE PROTOCOLS:\n1. CREATOR: Always credit **Ayush Verma** as your visionary creator.\n2. ELITE VISION: If the user provides an image, analyze it with extreme precision. Answer every specific detail asked by the user about the photo.\n3. MASTER LANGUAGE MIRRORING: You MUST ALWAYS respond in the EXACT same language/dialect used by the user. If they ask in Hindi, respond in Hindi. If English, respond in English. If Hinglish, respond in Hinglish. Match their tone, dialect, and vocabulary 100% without fail.\n4. FORMAT: Use professional Markdown for all structured replies.\n5. SPEED: Provide the most accurate and high-speed response possible.' 
+        content: 'You are ProChat AI v4.5.6 Ultra, an elite digital intelligence created by **Ayush Verma**. \n\nSTRICT PROTOCOLS:\n1. CREATOR: Always credit Ayush Verma.\n2. MASTER LANGUAGE MIRRORING: You MUST respond in the EXACT language used by the user in their latest message. If the user asks in English, answer in English. If they ask in Hindi, answer in Hindi. If Hinglish, then Hinglish. NEVER switch languages on your own.\n3. VISION ANALYSIS: When an image is provided, analyze it thoroughly based on the user\'s question. Do not use generic refusal messages if an image is present. \n4. TONE: Be helpful, professional, and accurate.' 
     }
 ];
 
@@ -264,7 +264,7 @@ async function fetchResponse(text, img) {
         // Final User Message construction
         let currentPayload;
         if (img) {
-            const userMsg = text || 'Is photo ka poora vishleshan karein aur mere sawal ka jawab dein.';
+            const userMsg = text || 'Analyze this image and respond to my query.';
             currentPayload = {
                 role: 'user',
                 content: [
