@@ -335,27 +335,34 @@ chatForm.addEventListener('submit', async (e) => {
     userInput.focus();
 });
 
-// Global Image Error Handler with Auto-Retry
+// Global Image Error Handler - Smart Retry & Fallback
+let retryCount = {};
+
 function handleImageError(img, prompt) {
-    console.warn("Retrying image load for:", prompt);
-    const container = img.parentElement;
+    const id = img.src;
+    retryCount[id] = (retryCount[id] || 0) + 1;
     
-    // Show a subtle retry message instead of blocking the UI
+    const container = img.parentElement;
     if (!container.querySelector('.retry-tag')) {
         const span = document.createElement('div');
         span.className = 'retry-tag';
         span.style = "position:absolute; bottom:10px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.7); padding:4px 12px; border-radius:20px; font-size:10px; color:#fff;";
-        span.innerText = "Processing Ultra HD...";
+        span.innerText = "Enhancing Visuals...";
         container.style.position = 'relative';
         container.appendChild(span);
     }
 
-    const newSeed = Math.floor(Math.random() * 1000000);
-    const newUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?nologo=true&seed=${newSeed}`;
-    
-    // Wait and retry
-    setTimeout(() => {
-        img.src = newUrl;
-    }, 4000);
+    if (retryCount[id] < 3) {
+        // Retry with a new seed
+        const nextSeed = Math.floor(Math.random() * 99999);
+        setTimeout(() => {
+            img.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${nextSeed}&nologo=true`;
+        }, 3000);
+    } else {
+        // Final Fallback: Lorem FlickR (Very stable)
+        console.log("AI Busy. Falling back to HD Library for:", prompt);
+        img.src = `https://loremflickr.com/1024/1024/${encodeURIComponent(prompt)}`;
+        const tag = container.querySelector('.retry-tag');
+        if (tag) tag.innerText = "Library Visual Loaded";
+    }
 }
-
