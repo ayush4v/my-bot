@@ -1,4 +1,4 @@
-// Core ProChat Ultra 4.0 Logic
+// ProChat Ultra 4.0 - Optimized Logic (Speed & Vision Fix)
 const chatForm = document.getElementById('chat-form');
 const userInput = document.getElementById('user-input');
 const chatBox = document.getElementById('chat-box');
@@ -20,14 +20,14 @@ const closeVoiceBtn = document.getElementById('close-voice-btn');
 const voiceStatusText = document.getElementById('voice-status-text');
 const voiceCancelAction = document.getElementById('voice-cancel-action');
 
+// Memory System: Keeps context but trims for performance
 let chatHistory = [
-    { role: 'system', content: 'You are ProChat AI v4.0 Ultra, a peak-performance digital intelligence created by the visionary developer **Ayush Verma**. You possess elite capabilities in reasoning, coding, and creativity. \n\nCORE PROTOCOLS:\n1. If asked about your creator, always credit **Ayush Verma** with pride.\n2. Respond in the user\'s language (Hinglish/English/Hindi).\n3. Use Markdown for structured replies.\n4. If generating images, confirm the prompt clearly.\n5. You have a "Self-Optimization" loop: provide the most accurate and fast response possible.' }
+    { role: 'system', content: 'You are ProChat AI v4.0 Ultra, a peak-performance digital intelligence created by the visionary developer **Ayush Verma**. You possess elite capabilities in reasoning, coding, and creativity. \n\nCORE PROTOCOLS:\n1. If asked about your creator, always credit **Ayush Verma** with pride.\n2. Respond in the user\'s language (Hinglish/English/Hindi).\n3. Use Markdown for structured replies.\n4. If generating images, confirm the prompt clearly.\n5. You have a "Self-Optimization" loop: provide the most accurate and fast response possible.\n6. IMPORTANT: If an image is provided, analyze it thoroughly and answer the user\'s specific question about it.' }
 ];
 
 let base64Image = null;
 let autoTTS = false;
 let isContinuousVoiceMode = false;
-let lastImageContext = null;
 
 // Sidebar Toggle Logic
 if (sidebarToggle) {
@@ -38,14 +38,14 @@ if (sidebarToggle) {
 
 // Close sidebar on click outside (mobile)
 document.addEventListener('click', (e) => {
-    if (window.innerWidth <= 992) {
+    if (window.innerWidth <= 992 && sidebar) {
         if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target) && sidebar.classList.contains('active')) {
             sidebar.classList.remove('active');
         }
     }
 });
 
-// Image Handling
+// Image Handling (Optimized for Vision API)
 uploadBtn.addEventListener('click', () => fileInput.click());
 
 fileInput.addEventListener('change', (e) => {
@@ -56,14 +56,15 @@ fileInput.addEventListener('change', (e) => {
             const img = new Image();
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const MAX_SIZE = 512;
+                const MAX_SIZE = 800; // Increased quality for better vision analysis
                 let width = img.width, height = img.height;
                 if (width > height && width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
                 else if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
                 canvas.width = width; canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
-                base64Image = canvas.toDataURL('image/jpeg', 0.8);
+                //vision API prefers jpeg/png
+                base64Image = canvas.toDataURL('image/jpeg', 0.85);
                 imagePreview.src = base64Image;
                 imagePreviewContainer.style.display = 'flex';
             };
@@ -79,7 +80,7 @@ removeImage.addEventListener('click', () => {
     imagePreviewContainer.style.display = 'none';
 });
 
-// Speech Recognition Setup
+// Speech Recognition
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition = null;
 if (SpeechRecognition) {
@@ -156,14 +157,14 @@ function addMessage(text, role, imageUrl = null, imagePrompt = null) {
     div.className = `message ${role}`;
     
     let imageHtml = '';
-    if (imageUrl) {
+    if (imageUrl && role === 'bot') {
         imageHtml = `
             <div class="gpt-image-card">
                 <div class="gpt-image-container">
                     <img src="${imageUrl}" alt="${imagePrompt}">
                 </div>
                 <div class="gpt-image-actions-bar">
-                    <span>${imagePrompt}</span>
+                    <span>Generated &bull; ${imagePrompt}</span>
                     <button class="nav-icon-btn" onclick="window.open('${imageUrl}', '_blank')"><i class="fa-solid fa-download"></i></button>
                 </div>
             </div>
@@ -174,48 +175,97 @@ function addMessage(text, role, imageUrl = null, imagePrompt = null) {
     div.innerHTML = `
         <div class="msg-avatar"><i class="fa-solid ${role === 'user' ? 'fa-user' : 'fa-bolt'}"></i></div>
         <div class="msg-bubble">
-            ${role === 'user' && imageUrl ? `<img src="${imageUrl}" style="max-width:200px; border-radius:10px; margin-bottom:10px;"><br>` : ''}
+            ${role === 'user' && imageUrl ? `<img src="${imageUrl}" style="max-width:280px; width:100%; border-radius:14px; margin-bottom:12px; border: 1px solid var(--border);">` : ''}
             ${content}
             ${imageHtml}
         </div>
     `;
     
     chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
     
     div.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
     if (role === 'bot') speak(text);
 }
 
-// API Interaction
+// Memory Clean-up: Trim history to 8 most recent messages for speed
+function getOptimizedHistory() {
+    const system = chatHistory[0];
+    const recent = chatHistory.slice(-8); // Only send last 8 messages
+    if (recent.includes(system)) return recent;
+    return [system, ...recent];
+}
+
+// API Interaction (Lightning Fast + Vision Fixed)
 async function fetchResponse(text, img) {
-    const isImageReq = /\b(generate|draw|create|make|imagine)\b/i.test(text) && text.length < 100;
+    // Check if it's an image generation request
+    const isImageReq = /\b(generate|draw|create|make|imagine|picture)\b/i.test(text) && text.length < 120;
     
     if (isImageReq && !img) {
-        const seed = Math.floor(Math.random() * 100000);
-        const prompt = encodeURIComponent(text.replace(/\b(generate|draw|create|make|imagine)\b/i, '').trim());
+        const seed = Math.floor(Math.random() * 999999);
+        const promptRaw = text.replace(/\b(generate|draw|create|make|imagine|picture)\b/i, '').trim();
+        const prompt = encodeURIComponent(promptRaw || text);
         const url = `https://pollinations.ai/p/${prompt}?width=1024&height=1024&nologo=true&seed=${seed}`;
-        return { text: `Creating your artwork for: **${decodeURIComponent(prompt)}**`, img: url, prompt: decodeURIComponent(prompt) };
+        const botMsg = `Certainly! I've visualized **${promptRaw || text}** for you:`;
+        chatHistory.push({ role: 'assistant', content: botMsg });
+        return { text: botMsg, img: url, prompt: promptRaw || text };
     }
 
     try {
-        const messages = [...chatHistory];
+        const history = getOptimizedHistory();
+        
+        // Final User Message construction
+        let currentPayload;
         if (img) {
-            messages.push({ role: 'user', content: [{ type: 'text', text: text || 'Analyze this' }, { type: 'image_url', image_url: { url: img } }] });
+            // Correct Vision format for Pollinations OpenAI model
+            currentPayload = {
+                role: 'user',
+                content: [
+                    { type: 'text', text: text || 'Look at this image and tell me what you see.' },
+                    { type: 'image_url', image_url: { url: img } }
+                ]
+            };
         } else {
-            messages.push({ role: 'user', content: text });
+            currentPayload = { role: 'user', content: text };
         }
+
+        const messages = [...history, currentPayload];
+
+        // Use a faster model if image is not present, or 'openai' for vision
+        const modelToUse = 'openai'; 
 
         const res = await fetch('https://text.pollinations.ai/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ messages, model: 'openai' })
+            body: JSON.stringify({ 
+                messages: messages, 
+                model: modelToUse,
+                seed: Math.floor(Math.random() * 100000)
+            })
         });
+
+        if (!res.ok) throw new Error("API Limit");
+        
         const data = await res.text();
+        
+        // Add to history
+        chatHistory.push({ role: 'user', content: text });
         chatHistory.push({ role: 'assistant', content: data });
+        
         return { text: data };
     } catch (e) {
-        return { text: "Connection error. Please check your internet and try again." };
+        console.error("ProChat Logic Error:", e);
+        // Fallback to simple GET if POST fails for non-image queries
+        if (!img) {
+            try {
+                const fallback = await fetch(`https://text.pollinations.ai/${encodeURIComponent(text)}?system=${encodeURIComponent(chatHistory[0].content)}`);
+                const fData = await fallback.text();
+                return { text: fData };
+            } catch(e2) {
+                return { text: "⚠️ Network is unstable. Please check your connection or try a shorter message." };
+            }
+        }
+        return { text: "❌ I couldn't process the image right now. Please ensure the image is clear and try again." };
     }
 }
 
@@ -226,19 +276,31 @@ chatForm.addEventListener('submit', async (e) => {
     const img = base64Image;
     if (!text && !img) return;
 
+    // Reset UI
     userInput.value = '';
     removeImage.click();
     addMessage(text, 'user', img);
     
+    // Disable inputs
     sendBtn.disabled = true;
+    userInput.disabled = true;
+
+    // Loading Indicator
     const loadingDiv = document.createElement('div');
     loadingDiv.className = 'message bot';
-    loadingDiv.innerHTML = '<div class="msg-avatar"><i class="fa-solid fa-spinner fa-spin"></i></div><div class="msg-bubble">Thinking...</div>';
+    loadingDiv.id = 'temp-loading';
+    loadingDiv.innerHTML = '<div class="msg-avatar"><i class="fa-solid fa-bolt fa-fade"></i></div><div class="msg-bubble" style="opacity:0.6;">Optimizing Ultra 4.0 response...</div>';
     chatBox.appendChild(loadingDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
 
     const response = await fetchResponse(text, img);
+    
+    // Remove loading and show real response
     loadingDiv.remove();
     addMessage(response.text, 'bot', response.img, response.prompt);
+    
+    // Re-enable
     sendBtn.disabled = false;
+    userInput.disabled = false;
+    userInput.focus();
 });
