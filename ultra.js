@@ -225,7 +225,6 @@ async function fetchResponse(text, img) {
     const triggers = ['generate', 'draw', 'create', 'make', 'imagine', 'picture', 'banao', 'photo', 'dikhao', 'dikhayo', 'image', 'wallpaper', 'art', 'sketch', 'bana', 'dikha'];
     const triggerRegex = new RegExp(`\\b(${triggers.join('|')})\\b`, 'gi');
     const isImageReq = triggerRegex.test(text) && text.length < 150;
-    
     if (isImageReq && !img) {
         const seed = Math.floor(Math.random() * 10000);
         let cleanPrompt = text.replace(triggerRegex, '')
@@ -236,8 +235,10 @@ async function fetchResponse(text, img) {
         const finalPrompt = cleanPrompt || text;
         const promptEncoded = encodeURIComponent(finalPrompt);
         
-        // Use the most direct endpoint possible
-        const url = `https://image.pollinations.ai/prompt/${promptEncoded}?nologo=true&seed=${seed}`;
+        // Use a Proxy (weserv.nl) to bypass browser security blocks (ORB)
+        const primaryUrl = `https://image.pollinations.ai/prompt/${promptEncoded}?nologo=true&seed=${seed}`;
+        const url = `https://images.weserv.nl/?url=${encodeURIComponent(primaryUrl.replace('https://', ''))}&w=1024&h=1024&fit=cover`;
+
         const botMsg = `Zaroor! Maine aapke liye **"${finalPrompt}"** ka visualization taiyaar kiya hai:`;
         
         chatHistory.push({ role: 'assistant', content: botMsg });
@@ -357,8 +358,11 @@ function handleImageError(img, prompt) {
 
     if (count < 4) {
         const nextSeed = Math.floor(Math.random() * 99999);
+        const pollUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${nextSeed}&nologo=true`;
+        const proxiedUrl = `https://images.weserv.nl/?url=${encodeURIComponent(pollUrl.replace('https://', ''))}&w=1024&h=1024&fit=cover&cache=${Date.now()}`;
+        
         setTimeout(() => {
-            img.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${nextSeed}&nologo=true&now=${Date.now()}`;
+            img.src = proxiedUrl;
         }, 3000);
     } else {
         // Ultimate Fallback to a different service
@@ -371,11 +375,11 @@ function handleImageError(img, prompt) {
 
 function retryImage(containerId, prompt) {
     const container = document.getElementById(containerId);
+    if (!container) return;
     const img = container.querySelector('img');
-    const tag = container.querySelector('.retry-tag');
-    if (tag) tag.remove();
     
-    retryMap.set(prompt, 0); // Reset retry count for manual refresh
+    retryMap.set(prompt, 0); 
     const newSeed = Math.floor(Math.random() * 99999);
-    img.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${newSeed}&nologo=true&refresh=true`;
+    const pollUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${newSeed}&nologo=true`;
+    img.src = `https://images.weserv.nl/?url=${encodeURIComponent(pollUrl.replace('https://', ''))}&w=1024&h=1024&fit=cover&refresh=true`;
 }
