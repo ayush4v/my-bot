@@ -925,9 +925,9 @@ async function fetchResponse(text, img) {
         const messages = [...history, currentPayload];
 
         // Use GPT-4o for best vision support
-        const modelToUse = img ? 'openai' : 'openai'; 
+        const modelToUse = img ? 'gpt-4o' : 'openai'; 
 
-        const res = await fetch('https://text.pollinations.ai/', {
+        const res = await fetch('https://text.pollinations.ai/v1/chat/completions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -937,9 +937,10 @@ async function fetchResponse(text, img) {
             })
         });
 
-        if (!res.ok) throw new Error("API Limit");
+        if (!res.ok) throw new Error("API Limit or Error");
         
-        const data = await res.text();
+        const jsonResult = await res.json();
+        const data = jsonResult.choices[0].message.content;
         
         // Add to history
         if (img) {
