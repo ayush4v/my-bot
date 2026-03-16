@@ -1,4 +1,4 @@
-// ProChat Ultra 4.5.6 - Elite Language Mirroring (Vision Fixed)
+// ProChat Ultra 4.6.0 - Supreme Mobile UI & Language Logic (Vision Fixed)
 const chatForm = document.getElementById('chat-form');
 const userInput = document.getElementById('user-input');
 const chatBox = document.getElementById('chat-box');
@@ -24,7 +24,7 @@ const voiceCancelAction = document.getElementById('voice-cancel-action');
 let chatHistory = [
     { 
         role: 'system', 
-        content: 'You are ProChat AI v4.5.6 Ultra, an elite digital intelligence created by **Ayush Verma**. \n\nSTRICT PROTOCOLS:\n1. CREATOR: Always credit Ayush Verma.\n2. MASTER LANGUAGE MIRRORING: You MUST respond in the EXACT language used by the user in their latest message. If the user asks in English, answer in English. If they ask in Hindi, answer in Hindi. If Hinglish, then Hinglish. NEVER switch languages on your own.\n3. VISION ANALYSIS: When an image is provided, analyze it thoroughly based on the user\'s question. Do not use generic refusal messages if an image is present. \n4. TONE: Be helpful, professional, and accurate.' 
+        content: 'You are ProChat AI v4.6.0 Ultra, an elite digital intelligence created by **Ayush Verma**. \n\nSTRICT PROTOCOLS:\n1. CREATOR: Always credit Ayush Verma.\n2. MASTER LANGUAGE MIRRORING: You MUST respond in the EXACT language used by the user in their latest message. If the user asks in English, answer in English. If they ask in Hindi, answer in Hindi. If Hinglish, then Hinglish. NEVER switch languages on your own.\n3. VISION ANALYSIS: When an image is provided, analyze it thoroughly based on the user\'s question. Do not use generic refusal messages if an image is present. \n4. TONE: Be helpful, professional, and accurate.' 
     }
 ];
 
